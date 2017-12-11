@@ -6,7 +6,7 @@ var video, beat, image, imageContext,
 imageReflection, imageReflectionContext, imageReflectionGradient,
 texture, textureReflection, textureLeft;
 var image2, imageContext2, texture2, video2, texture2;
-var image3, imageContext3, texture3, video3, texture3, repl_left;
+var image3, imageContext3, texture3, video3, texture3, repl_left, repl_right;
 var mesh;
 var mouseX = 0;
 var mouseY = 0;
@@ -146,22 +146,24 @@ function startRecording() {
       }
     }
   }
-  try {
-    mediaRecorder = new MediaRecorder(window.stream, options);
-  } catch (e) {
-    console.error('Exception while creating MediaRecorder: ' + e);
-    alert('Exception while creating MediaRecorder: '
-      + e + '. mimeType: ' + options.mimeType);
-    return;
-  }
-  console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-  //recordButton.textContent = 'Stop Recording';
-  //playButton.disabled = true;
-  //downloadButton.disabled = true;
-  mediaRecorder.onstop = handleStop;
-  mediaRecorder.ondataavailable = handleDataAvailable;
-  mediaRecorder.start(10); // collect 10ms of data
-  console.log('MediaRecorder started', mediaRecorder);
+  setTimeout(function(){
+    try {
+        mediaRecorder = new MediaRecorder(window.stream, options);
+    } catch (e) {
+      console.error('Exception while creating MediaRecorder: ' + e);
+      alert('Exception while creating MediaRecorder: '
+        + e + '. mimeType: ' + options.mimeType);
+      return;
+    }
+    console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
+    //recordButton.textContent = 'Stop Recording';
+    //playButton.disabled = true;
+    //downloadButton.disabled = true;
+    mediaRecorder.onstop = handleStop;
+    mediaRecorder.ondataavailable = handleDataAvailable;
+    mediaRecorder.start(10); // collect 10ms of data
+    console.log('MediaRecorder started', mediaRecorder);
+  },1000);
 }
 
 function stopRecording() {
@@ -215,7 +217,12 @@ function download() {
   var a = document.createElement('a');
   a.style.display = 'none';
   a.href = url;
-  a.download = 'repl_left_nu.webm';
+  if ( repl_left.readyState === repl_left.HAVE_ENOUGH_DATA ){
+    a.download = 'repl_right_nu.webm';
+  }
+  else {
+    a.download = 'repl_left_nu.webm';
+  }
   document.body.appendChild(a);
   a.click();
   setTimeout(function() {
@@ -252,6 +259,7 @@ function init() {
   video3 = document.getElementById( 'video3' );
   console.log(video3);
   repl_left = document.getElementById( 'repl_left' );
+  repl_right = document.getElementById( 'repl_right' );
   //console.log (downloaded_vid);
   ///////////
 	// stream from webcam //
@@ -547,6 +555,11 @@ function render() {
   if ( video3.readyState === video3.HAVE_ENOUGH_DATA ) {
     imageContext3.drawImage( video3, 0, 0 );
     if ( texture3 ) texture3.needsUpdate = true;
+  }
+  if ( repl_right.readyState === repl_right.HAVE_ENOUGH_DATA ) {
+      imageContext3.drawImage( repl_right, 0, 0, videoImage.width, videoImage.height );
+      texture3.needsUpdate = false;
+      video3.pause();
   }
 
   if ( videostream.readyState === videostream.HAVE_ENOUGH_DATA )
