@@ -4,9 +4,9 @@ This repo sets up and runs a fake video chat site that loops webcam-feeds of use
 
 
 ##### prerequisites
-* run 'python3 -m http-server' in repo folder
+* run `python3 -m http-server` in repo folder
 * edit [move_files.py](), replace folder names with corresponding local folder structure
-* run 'move_files.py' in background to move around recorded video bits (use sudo if needed)
+* run `move_files.py` in background to move around recorded video bits (use sudo if needed)
 
 ##### code
 
